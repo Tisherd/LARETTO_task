@@ -5,10 +5,10 @@ function countConsecutiveDuplicates(array $arr): int
     $count = 0;
     $lastNumber = null;
     foreach ($arr as $number) {
-        if ($number === $lastNumber) {
+        if ($number == $lastNumber) {
             $count++;
-            $lastNumber = $number;
         }
+        $lastNumber = $number;
     }
 
     return $count;
@@ -16,21 +16,25 @@ function countConsecutiveDuplicates(array $arr): int
 
 function generateIntArray(int $length = 100, int $min = -10, int $max = 10 ): array
 {
-    return array_map(fn() => rand($min, $max), range(1, $length));
+    // Использование array_map с range/array_fill снижает производительность
+    $array = [];
+    for ($i = 0; $i < $length; $i++) {
+        $array[] = rand($min, $max);
+    }
+    return $array;
 }
 
-$startTime = microtime(true);
+$array = generateIntArray();
+$pairsCount = countConsecutiveDuplicates($array);
 
-$array = generateIntArray(); 
-$pairs = countConsecutiveDuplicates($array);
+echo "Количество последовательных пар одинаковых элементов: $pairsCount" . PHP_EOL;
 
-$endTime = microtime(true);
-
-echo "Количество последовательных пар одинаковых элементов: $pairs" . PHP_EOL;
-
-$executionTime = $endTime - $startTime;
-echo "Время выполнения скрипта: " . number_format($executionTime, 6) . " секунд" . PHP_EOL;
-
-// length - 10^7, exec time - 0.627491 секунд
-// length - 10^8, exec time - 6.397356 секунд
-
+/* 
+    length - 10^7
+    generateIntArray time               0.332157 секунд
+    countConsecutiveDuplicates time     0.062084 секунд
+    ---------------------------------------------------
+    length - 10^8
+    generateIntArray time               3.682004 секунд
+    countConsecutiveDuplicates time     0.657786 секунд
+*/
